@@ -47,14 +47,21 @@
         .title {
             font-size: 2rem;
             letter-spacing: 2px;
+            @include m.sp {
+                font-size: 1.6rem;
+            }
         }
     
         .sub-title {
             font-size: 1.25rem;
             margin-top: 30px;
             letter-spacing: 2px;
-        }
 
+            @include m.sp {
+                font-size: 1rem;
+            }
+        }
+        
         .blur{
             &.txt1 {
                 animation: blurAnime 2s ease 0.3s forwards;

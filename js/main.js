@@ -3,55 +3,43 @@ $(function () {
     ロード処理
   ===================================================*/
   const isFirstLoad = sessionStorage.getItem('isFirstLoad');
-
-  // 1回目も2回目も共通で使う初期化関数
-  function initAfterLoad() {
-    const hasHash = window.location.hash;
   
-    // タイトルアニメーション発火
-    $(".mainvisual__title").addClass('displayAnime');
-  
-    // ハッシュがあるならスクロール実行（ヘッダー高さ分を引く）
-    if (hasHash) {
-      scrollToHash();
-    }
-  }
-  
-  // 通常のページロード時
-  $(window).on('load', function () {
+  $(window).on('load',function(){
+    // フラグがない場合（初回アクセス時）
     if (!isFirstLoad) {
-      // 初回アクセス時の処理
+      // ローディング画面でのスクロール制御
       $('body').addClass('no-scroll');
-  
+
+      // じわっとテキストアニメーション起動
       BlurTextAnimeControl();
   
+      // フェードアウト
       setTimeout(function () {
         $(".loading1").addClass('fade-out');
       }, 5000);
   
+      // 完全に非表示（display:none）に切り替えたい場合
       setTimeout(function () {
         $(".loading1").addClass('none');
-      }, 6000);
+      }, 6000); // フェード時間（1s）後に
   
+        
+      // セッションストレージにフラグを保存
       sessionStorage.setItem('isFirstLoad', true);
-    } else {
-      // 2回目以降（ローディング非表示）
-      $('body').removeClass('no-scroll');
-      $(".loading1").addClass('none');
+    }   
+    else {
+      // 2回目以降はローディング画面非表示
+      $('body').removeClass('no-scroll'); //スクロール制御OFF
+      $(".loading1").addClass('none');    
       $(".loading2").addClass('none');
-  
-      initAfterLoad(); //←ここで共通処理
+      $(".mainvisual__title").addClass('displayAnime');
+      setTimeout(function () {
+        scrollToHash();
+      }, 10);
     }
   });
-  
-  // ページキャッシュ（bfcache）対応（戻るボタン対策）
-  window.addEventListener('pageshow', function (event) {
-    if (event.persisted || performance.getEntriesByType("navigation")[0]?.type === "back_forward") {
-      initAfterLoad();
-    }
-  });
-  
-  // ハッシュ位置へのスクロール処理
+
+  // 個別ページからメインページ表示時のセクション表示
   const scrollToHash = function () {
     const hasHash = window.location.hash;
     const headerHeight = $('header').outerHeight();
@@ -63,56 +51,18 @@ $(function () {
       }
     }
   };
-  
 
-  // const isFirstLoad = sessionStorage.getItem('isFirstLoad');
-  // $(window).on('load',function(){
-  //   // フラグがない場合（初回アクセス時）
-  //   if (!isFirstLoad) {
-  //     // ローディング画面でのスクロール制御
-  //     $('body').addClass('no-scroll');
-
-  //     // じわっとテキストアニメーション起動
-  //     BlurTextAnimeControl();
-  
-  //     // フェードアウト
-  //     setTimeout(function () {
-  //       $(".loading1").addClass('fade-out');
-  //     }, 5000);
-  
-  //     // 完全に非表示（display:none）に切り替えたい場合
-  //     setTimeout(function () {
-  //       $(".loading1").addClass('none');
-  //     }, 6000); // フェード時間（1s）後に
-  
-        
-  //     // セッションストレージにフラグを保存
-  //     sessionStorage.setItem('isFirstLoad', true);
-  //   }   
-  //   else {
-  //     // 2回目以降はローディング画面非表示
-  //     $('body').removeClass('no-scroll'); //スクロール制御OFF
-  //     $(".loading1").addClass('none');    
-  //     $(".loading2").addClass('none');
-  //     $(".mainvisual__title").addClass('displayAnime');
-  //     setTimeout(function () {
-  //       scrollToHash();
-  //     }, 10);
-  //   }
-  // });
-
-  // // 個別ページからメインページ表示時のセクション表示
-  // const scrollToHash = function () {
-  //   const hasHash = window.location.hash;
-  //   const headerHeight = $('header').outerHeight();
-  //   if (hasHash) {
-  //     const target = $(hasHash);
-  //     if (target.length) {
-  //       const position = target.offset().top - headerHeight;
-  //       $('html, body').scrollTop(position);
-  //     }
-  //   }
-  // };
+  // 万が一 load が動かなかったときの保険
+  const fallbackTimer = setTimeout(function () {
+    console.warn("⚠️ loadイベントが発火しなかったので強制実行");
+    $('body').removeClass('no-scroll'); //スクロール制御OFF
+    $(".loading1").addClass('none');    
+    $(".loading2").addClass('none');
+    $(".mainvisual__title").addClass('displayAnime');
+    setTimeout(function () {
+      scrollToHash();
+    }, 0.1);
+}, 10); // 3秒待っても動かなければ強制表示
 
   /*=================================================
     loading2 : クリック→波紋アニメーション/loading非表示

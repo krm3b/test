@@ -21,20 +21,25 @@ $(function () {
     }   
     // 2回目以降はローディング画面は表示せず即非表示にする
     else {
-      loadingDisplayNone();
+      loadingDisplayNone();  
     }
   });
 
   // DOMだけが読み込まれた段階で実行（サイト内画面遷移も含む）
-  const loadingDisplayNone = function () {
+  $(function () {
     // フラグがある場合（2回目以降のアクセス時）、ローディング画面は表示せず即非表示にする
     if (isFirstLoad) {
-      $('body').removeClass('no-scroll');     //スクロール制御OFF
-      $(".loading1").addClass('none');    
-      $(".loading2").addClass('none');
-      $(".mainvisual__title").addClass('displayAnime');
-      scrollToHash();
+      loadingDisplayNone();
     }
+  });
+
+  // ローディング画面速非表示処理
+  const loadingDisplayNone = function () {
+    $('body').removeClass('no-scroll');     //スクロール制御OFF
+    $(".loading1").addClass('none');    
+    $(".loading2").addClass('none');
+    $(".mainvisual__title").addClass('displayAnime');
+    scrollToHash();
   };
 
   // 個別ページからメインページ表示時のセクション表示

@@ -78,12 +78,6 @@ img {
         }
     }
 }
-/* Safariだけ上書きでbox-shadowを薄くする */
-@supports (-webkit-appearance: none) and (not (translate: none)) {
-    .section-title {
-        text-shadow: 7px 4px 2px rgba(52, 52, 52, 0.15);
-    }
-}
 
 .footer-title {
     font-family: "Gasoek One", sans-serif;

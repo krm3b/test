@@ -5,39 +5,37 @@ $(function () {
   const isFirstLoad = sessionStorage.getItem('isFirstLoad');
   
   $(window).on('load',function(){
-    // フラグがない場合（初回アクセス時）
+    // セッションストレージにフラグがない場合（初回アクセス時）
     if (!isFirstLoad) {
-      // ローディング画面でのスクロール制御
-      $('body').addClass('no-scroll');
+      $('body').addClass('no-scroll');        // ローディング画面でのスクロール制御ON
 
-      // じわっとテキストアニメーション起動
-      BlurTextAnimeControl();
+      BlurTextAnimeControl();                 // loading1テキストじわっとテキストアニメーション起動
   
-      // フェードアウト
       setTimeout(function () {
-        $(".loading1").addClass('fade-out');
+        $(".loading1").addClass('fade-out');  // 5秒後にloading1フェードアウト
       }, 5000);
-  
-      // 完全に非表示（display:none）に切り替えたい場合
+      
       setTimeout(function () {
-        $(".loading1").addClass('none');
-      }, 6000); // フェード時間（1s）後に
-  
-        
-      // セッションストレージにフラグを保存
-      sessionStorage.setItem('isFirstLoad', true);
+        $(".loading1").addClass('none');      // フェードアウトして1秒後にloading1をdisplay:none
+      }, 6000);        
     }   
+    // 2回目以降はローディング画面は表示せず即非表示にする
     else {
-      // 2回目以降はローディング画面非表示
-      $('body').removeClass('no-scroll'); //スクロール制御OFF
+      loadingDisplayNone();
+    }
+  });
+
+  // DOMだけが読み込まれた段階で実行（サイト内画面遷移も含む）
+  const loadingDisplayNone = function () {
+    // フラグがある場合（2回目以降のアクセス時）、ローディング画面は表示せず即非表示にする
+    if (isFirstLoad) {
+      $('body').removeClass('no-scroll');     //スクロール制御OFF
       $(".loading1").addClass('none');    
       $(".loading2").addClass('none');
       $(".mainvisual__title").addClass('displayAnime');
-      setTimeout(function () {
-        scrollToHash();
-      }, 10);
+      scrollToHash();
     }
-  });
+  };
 
   // 個別ページからメインページ表示時のセクション表示
   const scrollToHash = function () {
@@ -52,20 +50,8 @@ $(function () {
     }
   };
 
-  // 万が一 load が動かなかったときの保険
-  const fallbackTimer = setTimeout(function () {
-    console.warn("⚠️ loadイベントが発火しなかったので強制実行");
-    $('body').removeClass('no-scroll'); //スクロール制御OFF
-    $(".loading1").addClass('none');    
-    $(".loading2").addClass('none');
-    $(".mainvisual__title").addClass('displayAnime');
-    setTimeout(function () {
-      scrollToHash();
-    }, 0.1);
-}, 10); // 3秒待っても動かなければ強制表示
-
   /*=================================================
-    loading2 : クリック→波紋アニメーション/loading非表示
+    loading2 : クリック→波紋アニメーション/loading2非表示
   ===================================================*/
   $('.loading2').click(function (e) {
     const ripple = document.getElementById('ripple');
@@ -89,11 +75,13 @@ $(function () {
       loading2.classList.add('fade-out');
 
       setTimeout(() => {
-        loading2.classList.add('none'); // 完全に非表示に
-        loading2.classList.remove('fade-out'); // 次回のためにリセット
-        $('body').removeClass('no-scroll');
-        $(".mainvisual__title").addClass('displayAnime')
-      }, 1000); // フェードアウトのCSSに合わせた時間
+        loading2.classList.add('none');                   // loading2をdisplay:none
+        loading2.classList.remove('fade-out');            // 次回のためにフェードアウトをリセット
+        $('body').removeClass('no-scroll');               // スクロール制御OFF
+        $(".mainvisual__title").addClass('displayAnime')  
+        sessionStorage.setItem('isFirstLoad', true);      // セッションストレージにフラグを保存
+
+      }, 1000);                                           // loading2フェードアウトのCSSに合わせた時間
     });
   });
 
@@ -172,7 +160,6 @@ $(function () {
       // PC表示のとき（ヘッダー分の補正あり）
       position = target.offset().top - headerHeight;
     }
-    console.log("position: " + position);
     let speed = 600;
     $("html, body").animate({ scrollTop: position }, speed, "swing");
     return false;

@@ -19,9 +19,10 @@ $(function () {
         $(".loading1").addClass('none');      // フェードアウトして1秒後にloading1をdisplay:none
       }, 6000);        
     }   
-    // 2回目以降はローディング画面は表示せず即非表示にする
+    //2回目以降はローディング画面は表示せず即非表示にする
     else {
       loadingDisplayNone();  
+      scrollToHash();
     }
   });
 
@@ -30,6 +31,7 @@ $(function () {
     // フラグがある場合（2回目以降のアクセス時）、ローディング画面は表示せず即非表示にする
     if (isFirstLoad) {
       loadingDisplayNone();
+      setTimeout(scrollToHash, 100);
     }
   });
 
@@ -39,7 +41,7 @@ $(function () {
     $(".loading1").addClass('none');    
     $(".loading2").addClass('none');
     $(".mainvisual__title").addClass('displayAnime');
-    scrollToHash();
+
   };
 
   // 個別ページからメインページ表示時のセクション表示
@@ -51,6 +53,7 @@ $(function () {
       if (target.length) {
         const position = target.offset().top - headerHeight;
         $('html, body').scrollTop(position);
+        console.log("position: " + position);
       }
     }
   };
@@ -165,6 +168,7 @@ $(function () {
       // PC表示のとき（ヘッダー分の補正あり）
       position = target.offset().top - headerHeight;
     }
+    console.log("＊position: " + position);
     let speed = 600;
     $("html, body").animate({ scrollTop: position }, speed, "swing");
     return false;
@@ -212,6 +216,7 @@ $(function () {
 
   function setupScrollTrigger() {
     const items = document.querySelector(".advantage__items");
+    if (!items) return; // ← 要素がなければ処理しない（横スクロールしないページ用）
     const inner = document.querySelectorAll(".advantage__items--item");
     const header = document.querySelector("header");
     const headerHeight = header.offsetHeight;
@@ -243,6 +248,17 @@ $(function () {
         markers: false, // デバッグしたい時はtrue
       }
     });
+    
+    // 画像ふんわり表示
+    gsap.utils.toArray(".js-fade").forEach((elem) => {
+      ScrollTrigger.create({
+        trigger: elem,
+        containerAnimation: scrollTween, // ←横スクロールと連動
+        start: "left 80%",              // ←要素の左端が画面の80%に来たとき
+        toggleClass: { targets: elem, className: "is-show" },
+        once: true
+      });
+    });
   };
 
   // 初回実行
@@ -257,16 +273,6 @@ $(function () {
   window.addEventListener("resize", () => {
     setupScrollTrigger();
     ScrollTrigger.refresh();
-  });
-
-  // 画像ふんわり表示
-  gsap.utils.toArray(".js-fade").forEach(function (elem) {
-    ScrollTrigger.create({
-      trigger: elem,
-      start: "top 80%", // 表示領域に入ったとき
-      toggleClass: { targets: elem, className: "is-show" }, // ←ここでクラス付与
-      once: true // 一度だけ実行（リロードしない限り消えない）
-    });
   });
 
   // --------------------------------------------------

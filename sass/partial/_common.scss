@@ -78,7 +78,8 @@ img {
         }
     }
 }
-/* Safariだけ上書きでbox-shadowを薄くする */
+
+//Safariだけ上書きでbox-shadowをなし
 @supports (-webkit-appearance: none) and (not (translate: none)) {
     .section-title {
         text-shadow: none;

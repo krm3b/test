@@ -2,9 +2,8 @@ $(function () {
   /*=================================================
     ロード処理
   ===================================================*/
-  const isFirstLoad = sessionStorage.getItem('isFirstLoad');
-  
   $(window).on('load',function(){
+    const isFirstLoad = sessionStorage.getItem('isFirstLoad');
     // セッションストレージにフラグがない場合（初回アクセス時）
     if (!isFirstLoad) {
       $('body').addClass('no-scroll');        // ローディング画面でのスクロール制御ON

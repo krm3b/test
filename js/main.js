@@ -27,6 +27,7 @@ $(function () {
 
   // DOMだけが読み込まれた段階で実行（サイト内画面遷移も含む）
   $(function () {
+    const isFirstLoad = sessionStorage.getItem('isFirstLoad');
     // フラグがある場合（2回目以降のアクセス時）、ローディング画面は表示せず即非表示にする
     if (isFirstLoad) {
       loadingDisplayNone();
